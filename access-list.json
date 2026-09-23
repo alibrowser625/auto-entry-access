@@ -2,8 +2,6 @@
   "users": [
     {
       "id": "alihasanlurka629@gmail.com",
-      // Don't do this
-const ADMIN_PASSWORD = "Hollywood123$$";
       "role": "master",
       "active": true
     }
