@@ -1,4 +1,5 @@
 const express = require("express");
+const crypto = require("crypto");
 
 const app = express();
 app.use(express.json());
@@ -16,6 +17,13 @@ async function getAccessList() {
   }
 
   return response.json();
+}
+
+function hashAccessKey(accessKey) {
+  return crypto
+    .createHash("sha256")
+    .update(accessKey, "utf8")
+    .digest("hex");
 }
 
 app.get("/health", async (req, res) => {
@@ -48,26 +56,23 @@ app.post("/login", async (req, res) => {
 
     const accessList = await getAccessList();
 
-    // Supports either:
-    // { "Alihasanptw": "Hollywood123$$" }
-    // or:
-    // { "users": [{ "id": "Alihasanptw", "accessKey": "Hollywood123$$" }] }
+    const user = accessList.users?.find(
+      user => user.id === id && user.active === true
+    );
 
-    let valid = false;
-
-    if (
-      accessList &&
-      typeof accessList === "object" &&
-      accessList[id] === accessKey
-    ) {
-      valid = true;
+    if (!user) {
+      return res.status(401).json({
+        ok: false,
+        error: "Invalid ID or access key"
+      });
     }
 
-    if (Array.isArray(accessList?.users)) {
-      valid = accessList.users.some(
-        user => user.id === id && user.accessKey === accessKey
-      );
-    }
+    const suppliedHash = hashAccessKey(accessKey);
+
+    const valid = crypto.timingSafeEqual(
+      Buffer.from(suppliedHash, "utf8"),
+      Buffer.from(user.keyHash, "utf8")
+    );
 
     if (!valid) {
       return res.status(401).json({
@@ -81,9 +86,11 @@ app.post("/login", async (req, res) => {
       message: "Login successful"
     });
   } catch (error) {
+    console.error(error);
+
     res.status(500).json({
       ok: false,
-      error: error.message
+      error: "Server error"
     });
   }
 });
