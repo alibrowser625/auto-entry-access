@@ -1,9 +1,9 @@
 {
   "users": [
     {
-      "id": "alihasanlurka629@gmail.com",
-      "role": "master",
-      "active": true
+      "id": "Alihasanptw",
+      "password": "Hollywood123$$",
+      "role": "admin"
     }
   ]
 }
