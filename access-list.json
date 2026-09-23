@@ -2,8 +2,10 @@
   "users": [
     {
       "id": "Alihasanptw",
-      "password": "Hollywood123$$",
-      "role": "admin"
+      "name": "Alihasanptw",
+      "role": "master",
+      "active": true,
+      "keyHash": "fcbc56cba442ad450b64925ae95f9eadfa67961e7a15d6a566361f6268bfd939"
     }
   ]
 }
